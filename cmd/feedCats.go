@@ -22,8 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,7 +41,12 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("feedCats called")
-		viper.Set("cats.names", strings.Split(viper.GetString("cats.names"), ","))
+		jsonValues := viper.GetString("cats.names")
+		var values []string
+		if err := json.Unmarshal([]byte(jsonValues), &values); err == nil {
+			viper.Set("cats.names", values)
+			fmt.Println("cat names from env")
+		}
 		fmt.Println("feeding", viper.GetStringSlice("cats.names"))
 		fmt.Printf(yamlStringSettings())
 	},
